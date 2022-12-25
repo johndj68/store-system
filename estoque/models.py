@@ -12,7 +12,7 @@ class Produto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True)
     quantidade = models.FloatField()
     preco_compra =  models.FloatField()
-    # Mudar para Binaryfield
+    #TODO: Mudar para Binaryfield
     preco_venda = models.FloatField()
 
     def __str__(self) -> str:
@@ -24,7 +24,10 @@ class Produto(models.Model):
     def lucro(self):
         lucro = self.preco_venda - self.preco_compra
         return (lucro * 100) / self.preco_compra
-        
+
+class imagem (models.Model):
+    imagem = models.ImageField(upload_to="imagem_produto")
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)    
         
 
 
