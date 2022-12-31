@@ -1,4 +1,5 @@
 from django.db import models
+from django.template.defaultfilters import slugify
 
 class Categoria(models.Model):
     titulo = models.CharField(max_length=40)
@@ -8,15 +9,24 @@ class Categoria(models.Model):
 
 
 class Produto(models.Model):
-    nome = models.CharField(max_length=40)
+    nome = models.CharField(max_length=40, unique=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True)
     quantidade = models.FloatField()
     preco_compra =  models.FloatField()
     #TODO: Mudar para Binaryfield
     preco_venda = models.FloatField()
+    slug = models.SlugField(unique=True, blank=True, null=True)
 
     def __str__(self) -> str:
         return self.nome
+
+    def save(self,*args,**kwargs):
+        if not self.slug:
+            self.slug = slugify(self.nome)
+        
+        return super().save(*args, **kwargs)
+
+
 
     def gerar_descontos(self, desconto):
         return self.preco_venda - ((self.preco_venda * desconto)/100)
@@ -25,9 +35,9 @@ class Produto(models.Model):
         lucro = self.preco_venda - self.preco_compra
         return (lucro * 100) / self.preco_compra
 
-class imagem (models.Model):
+class Imagem(models.Model):
     imagem = models.ImageField(upload_to="imagem_produto")
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)    
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)   
         
 
 

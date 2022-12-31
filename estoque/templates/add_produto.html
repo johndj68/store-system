@@ -1,41 +1,65 @@
-<form action="{% url 'add_produto' %}" method="POST" enctype="multipart/form-data"> {% csrf_token %}
-<label>Imagens</label>
-<input type="file" name="imagens" multiple>
-<br>
-<br>
-<label>Nome:</label>
-<input type="text" name="nome">
-<br>
-<br>
-<label>Selecione a categoria do produto:</label>
-<select name="categoria">
-    {% for categoria in categorias %}
-    <option value="{{categoria.id}}">{{categoria.titulo}}</option>
-    {% endfor %}
+{% extends 'base.html' %}
+{% load filters %}
 
-    </select>
+{% block 'body'%}
 
-    <br>
-    <br>
+<div class="container">
+       
+      {% if messages %}
+          <br>
+          {% for message in messages %}
+              <div class="alert {{message.tags}}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
 
-    <label>Estoque inicial:</label>
-    <input class="form-control" type="number" name="quantidade">
-    <br>
-    <br>
+        <form action="{% url 'add_produto' %}" method="POST" enctype="multipart/form-data"> {% csrf_token %}
 
-    <label>Preco de Compra:</label>
-    <input type="number" name="preco_compra">
+            <br>
+            <label>Imagens</label>
+            <input class="form-control" type="file" name="imagens" multiple>
+            <br>
+            <label>Nome:</label>
+            <input class="form-control" type="text" name="nome">
+            <br>
+            <label>Selecione a categoria do produto:</label>
+            <select class="form-control" name="categoria">
+            {% for categoria in categorias %}
+            <option value="{{categoria.id}}">{{categoria.titulo}}</option>
+            {% endfor %}
+            </select>
+            <br>
+            <label>Estoque inicial:</label>
+            <input class="form-control" type="number" name="quantidade">
+            <br>
+            <label>Preco de Compra:</label>
+            <input class="form-control"  type="number" name="preco_compra">
+            <br>
+            <label>Preco de Venda:</label>
+            <input class="form-control" type="number" name="preco_venda">
+            <br>
+            <input class="btn btn-success" type="submit" value="Enviar">    
 
-    <br>
-    <br>
-
-    <label>Preco de Venda:</label>
-    <input type="number" name="preco_venda">
-
-    <br>
-    <br>
-
-    <input type="submit" value="Enviar">
-    
-
-</form>
+        </form>
+        <hr style="background-color: gainsboro;">
+        <div class="listar_produtos">
+          <div class="row">
+            {% for produto in produtos %}
+          <div class="col-md">
+              <div style="background-color: rgb(39, 31, 31); width: 18rem;" class="card" style="width: 18rem;">
+                {% if produto|get_first_image %}
+                <img class="card-img-top" src="{{produto|get_first_image}}">
+                {% endif %}
+                  <div class="card-body">
+                    <h5 class="card-title">{{produto.nome}}</h5>
+                    <span class="badge badge-info">{{produto.categoria}}</span>
+                    <br>
+                    <br>
+                    <a href="{% url 'produto' produto.slug %}" class="btn btn-primary">Acessar</a>
+                  </div>
+                </div>
+                 <br>
+              </div>
+            {% endfor %}
+            </div>
+</div>
+{% endblock %}
